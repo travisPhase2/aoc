@@ -18,7 +18,36 @@ type Set struct {
 	Blue  int
 }
 
-func (g *Game) IsPotentialGameFor(search *Set) (bool, string) {
+func (g *Game) AddSets(setLines []string) {
+	for _, setStr := range setLines {
+		set := Set{
+			Red:   0,
+			Green: 0,
+			Blue:  0,
+		}
+		rolls := strings.Split(setStr, ",")
+		for _, roll := range rolls {
+			amountToColor := strings.Split(strings.Trim(roll, " "), " ")
+			color := amountToColor[1]
+			amount, err := strconv.Atoi(amountToColor[0])
+			if err != nil {
+				panic("coulnd't parase amount for round")
+			}
+
+			switch color {
+			case "red":
+				set.Red += amount
+			case "blue":
+				set.Blue += amount
+			case "green":
+				set.Green += amount
+			}
+		}
+		g.Sets = append(g.Sets, set)
+	}
+}
+
+func (g *Game) IsPotentialGameForSet(search *Set) bool {
 	possibleGame := true
 	for _, set := range g.Sets {
 		if set.Red > search.Red || set.Green > search.Green || set.Blue > search.Blue {
@@ -26,7 +55,7 @@ func (g *Game) IsPotentialGameFor(search *Set) (bool, string) {
 			break
 		}
 	}
-	return possibleGame, g.Id
+	return possibleGame
 }
 
 func (g *Game) LowestPossibleDice() Set {
@@ -60,41 +89,11 @@ func main() {
 	for _, line := range lines {
 		separated := strings.Split(line, ":")
 		id := strings.Split(separated[0], " ")[1]
-
 		game := Game{
 			Id: id,
 		}
-
 		setStrings := strings.Split(separated[1], ";")
-		var sets []Set
-		for _, setStr := range setStrings {
-			set := Set{
-				Red:   0,
-				Green: 0,
-				Blue:  0,
-			}
-			rolls := strings.Split(setStr, ",")
-			for _, roll := range rolls {
-				amountToColor := strings.Split(strings.Trim(roll, " "), " ")
-				color := amountToColor[1]
-				amount, err := strconv.Atoi(amountToColor[0])
-				if err != nil {
-					panic("coulnd't parase amount for round")
-				}
-
-				switch color {
-				case "red":
-					set.Red += amount
-				case "blue":
-					set.Blue += amount
-				case "green":
-					set.Green += amount
-				}
-			}
-			sets = append(sets, set)
-		}
-		game.Sets = sets
-
+		game.AddSets(setStrings)
 		games = append(games, game)
 	}
 
@@ -106,9 +105,9 @@ func main() {
 
 	var foundGames []string
 	for _, game := range games {
-		ok, id := game.IsPotentialGameFor(&search)
+		ok := game.IsPotentialGameForSet(&search)
 		if ok {
-			foundGames = append(foundGames, id)
+			foundGames = append(foundGames, game.Id)
 		}
 	}
 
