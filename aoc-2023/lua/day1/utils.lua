@@ -18,7 +18,7 @@ end
 ---prints a table 1 level deep
 ---@param tbl table
 M.inspect = function (tbl)
-    for index, value in ipairs(tbl) do
+    for index, value in pairs(tbl) do
         print(index, value)
     end
 end
