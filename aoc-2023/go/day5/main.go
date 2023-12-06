@@ -138,7 +138,6 @@ func main() {
 	// min := slices.Min(locations)
 	// fmt.Println("\n part 1: ", min)
 
-	min := 0
 	for loc := 0; ; loc++ {
 		x := loc
 		for m := len(maps) - 1; m >= 0; m-- {
@@ -147,12 +146,9 @@ func main() {
 
 		for s := 0; s < len(seeds); s += 2 {
 			if x >= seeds[s] && x <= seeds[s]+seeds[s+1] {
-				min = loc
-				break
+				fmt.Println(loc)
+				return
 			}
 		}
-		break
 	}
-
-	fmt.Println(min)
 }
