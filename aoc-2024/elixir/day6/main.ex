@@ -54,7 +54,7 @@ defmodule Aoc do
 
     %{
       part1: distinct_positions |> length(),
-      part2: nil
+      part2: "i give up"
     }
   end
 
